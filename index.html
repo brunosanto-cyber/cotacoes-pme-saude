@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotações PME Saúde</title>
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --primary: #1e3a8a;
+            --primary-hover: #1e40af;
+            --primary-light: #eff6ff;
+            --accent: #2563eb;
+            --accent-light: #dbeafe;
+            
+            /* Status Colors */
+            --status-approved-bg: #dcfce7;
+            --status-approved-text: #15803d;
+            --status-approved-border: #bbf7d0;
+            
+            --status-rejected-bg: #fee2e2;
+            --status-rejected-text: #b91c1c;
+            --status-rejected-border: #fecaca;
+            
+            --status-pending-bg: #fef3c7;
+            --status-pending-text: #b45309;
+            --status-pending-border: #fde68a;
+            
+            --status-neutral-bg: #f1f5f9;
+            --status-neutral-text: #475569;
+            --status-neutral-border: #cbd5e1;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 60px;
+        }
+
+        /* Top Header */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #ffffff;
+            padding: 32px 20px 48px 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #ffffff;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .header-subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .db-status-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.825rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #e2e8f0;
+        }
+
+        .db-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #22c55e;
+        }
+
+        /* Search Section */
+        .search-container {
+            max-width: 1200px;
+            margin: -28px auto 32px auto;
+            padding: 0 20px;
+        }
+
+        .search-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .input-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            font-size: 1.05rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #ffffff;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Loading & Error States */
+        .state-box {
+            text-align: center;
+            padding: 48px 24px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .state-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .state-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Result Top Summary Banner */
+        .company-summary-banner {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .company-info h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .company-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            background: var(--bg-body);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        .quotes-count-chip {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-light);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+
+        /* Filter Controls Bar */
+        .filter-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: var(--bg-card);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .sort-select {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        /* Quote Cards List */
+        .quote-cards-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .quote-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .quote-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Card Header */
+        .card-header {
+            background: #f1f5f9;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quote-number-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .quote-date-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border: 1px solid transparent;
+        }
+
+        .status-approved {
+            background-color: var(--status-approved-bg);
+            color: var(--status-approved-text);
+            border-color: var(--status-approved-border);
+        }
+
+        .status-rejected {
+            background-color: var(--status-rejected-bg);
+            color: var(--status-rejected-text);
+            border-color: var(--status-rejected-border);
+        }
+
+        .status-pending {
+            background-color: var(--status-pending-bg);
+            color: var(--status-pending-text);
+            border-color: var(--status-pending-border);
+        }
+
+        .status-neutral {
+            background-color: var(--status-neutral-bg);
+            color: var(--status-neutral-text);
+            border-color: var(--status-neutral-border);
+        }
+
+        /* Card Sections Body */
+        .card-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .section-block {
+            border: 1px solid #f1f5f9;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            background-color: #fafafa;
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--accent-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fields-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px 20px;
+        }
+
+        .field-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 2px;
+        }
+
+        .field-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .field-value.highlight-currency {
+            color: #0d9488;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .field-value.empty-val {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        /* Observações Box */
+        .obs-box {
+            background: #fffbe0;
+            border: 1px solid #fde047;
+            border-radius: var(--radius-md);
+            padding: 14px;
+            color: #713f12;
+            font-size: 0.925rem;
+            line-height: 1.6;
+        }
+
+        .obs-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #854d0e;
+        }
+
+        /* Toast Feedback */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            max-width: 1200px;
+            margin: 40px auto 0 auto;
+            padding: 0 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive adjust */
+        @media (max-width: 640px) {
+            header {
+                padding: 24px 16px 40px 16px;
+            }
+            .search-input-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+            .fields-grid {
+                grid-template-columns: 1fr;
+            }
+            .company-summary-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .action-buttons {
+                width: 100%;
+            }
+            .action-buttons .btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="header-title-row">
+                <div class="brand-logo">
+                    <div class="brand-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-3-3v6m-9 1V7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1>Cotações PME Saúde</h1>
+                        <div class="header-subtitle">Plataforma interna corporativa de análise e histórico de cotações</div>
+                    </div>
+                </div>
+                <div class="db-status-badge" id="dbStatusBadge">
+                    <span class="db-status-dot"></span>
+                    <span id="dbStatusText">Conectando ao banco de dados...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <div class="search-card">
+            <label class="search-label" for="searchInput">Buscar Cotação por CNPJ</label>
+            <div class="search-input-group">
+                <div class="input-wrapper">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Digite o CNPJ (ex: 73.196.644/0001-70 ou 73196644)..." autocomplete="off" />
+                </div>
+                <button class="btn btn-primary" id="btnSearch">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Buscar
+                </button>
+                <button class="btn btn-secondary" id="btnClear" style="display: none;">
+                    Limpar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main id="mainContainer">
+        <!-- Initial Loading State -->
+        <div class="state-box" id="loadingState">
+            <div class="spinner"></div>
+            <div class="state-title">Carregando base de dados...</div>
+            <div class="state-desc">Aguarde alguns segundos enquanto carregamos o arquivo <code>dados.json</code> na memória.</div>
+        </div>
+
+        <!-- Initial Welcome / Search Prompt -->
+        <div class="state-box" id="welcomeState" style="display: none;">
+            <svg width="48" height="48" fill="none" stroke="#64748b" viewBox="0 0 24 24" stroke-width="1.5" style="margin-bottom: 12px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.25 12l7.5-7.5-7.5-7.5M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5" />
+            </svg>
+            <div class="state-title">Digite um CNPJ para iniciar a consulta</div>
+            <div class="state-desc">Você pode pesquisar com ou sem pontuação (ex: <code>73196644000170</code> ou <code>73.196.644/0001-70</code>), ou buscar pela raiz do CNPJ.</div>
+        </div>
+
+        <!-- Error State -->
+        <div class="state-box" id="errorState" style="display: none; border-color: #fecaca; background: #fff5f5;">
+            <svg width="48" height="48" fill="none" stroke="#dc2626" viewBox="0 0 24 24" stroke-width="1.5" style="margin-bottom: 12px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+            <div class="state-title" style="color: #991b1b;">Erro ao carregar a base de dados</div>
+            <div class="state-desc" id="errorText">Não foi possível carregar o arquivo <code>dados.json</code>. Certifique-se de ter executado o script <code>gerar_dados.py</code> e que o arquivo esteja na mesma pasta deste HTML.</div>
+        </div>
+
+        <!-- No Results State -->
+        <div class="state-box" id="noResultsState" style="display: none;">
+            <svg width="48" height="48" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" stroke-width="1.5" style="margin-bottom: 12px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.773 4.773zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="state-title">Nenhum resultado encontrado</div>
+            <div class="state-desc" id="noResultsDetail">Nenhuma cotação foi localizada para o CNPJ pesquisado. Verifique os dígitos digitados e tente novamente.</div>
+        </div>
+
+        <!-- Results Area -->
+        <div id="resultsContent" style="display: none;">
+            <!-- Company Top Summary Banner -->
+            <div class="company-summary-banner" id="companyBanner">
+                <div class="company-info">
+                    <h2 id="summaryCompanyName">NOME DA EMPRESA</h2>
+                    <div class="company-meta">
+                        <span class="meta-badge">
+                            <strong style="color: var(--text-main);">CNPJ:</strong> 
+                            <span id="summaryCNPJ">00.000.000/0000-00</span>
+                        </span>
+                        <span class="quotes-count-chip" id="summaryQuoteCount">
+                            0 cotações encontradas
+                        </span>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary btn-sm" id="btnCopyCNPJ">
+                        Copiar CNPJ
+                    </button>
+                    <button class="btn btn-primary btn-sm" id="btnExportCSV">
+                        Exportar CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter and Sort Bar -->
+            <div class="filter-controls-bar">
+                <div class="filter-tabs" id="filterTabs">
+                    <!-- Filter buttons rendered dynamically -->
+                </div>
+                <div>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="date-desc">Data (Mais recente)</option>
+                        <option value="date-asc">Data (Mais antiga)</option>
+                        <option value="fat-desc">Estimativa Fatura (Maior)</option>
+                        <option value="fat-asc">Estimativa Fatura (Menor)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- List of Cards -->
+            <div class="quote-cards-grid" id="quoteCardsGrid">
+                <!-- Quote Cards rendered dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toastNotification">
+        <span id="toastText">Ação realizada com sucesso!</span>
+    </div>
+
+    <footer>
+        Cotações PME Saúde &copy; 2026. Todos os direitos reservados.
+    </footer>
+
+    <script>
+        // Global State
+        let allDatabaseData = [];
+        let currentResults = [];
+        let currentFilterStatus = 'ALL';
+        let currentSearchedCNPJ = '';
+
+        const dbStatusBadge = document.getElementById('dbStatusBadge');
+        const dbStatusText = document.getElementById('dbStatusText');
+        const searchInput = document.getElementById('searchInput');
+        const btnSearch = document.getElementById('btnSearch');
+        const btnClear = document.getElementById('btnClear');
+        
+        const loadingState = document.getElementById('loadingState');
+        const welcomeState = document.getElementById('welcomeState');
+        const errorState = document.getElementById('errorState');
+        const noResultsState = document.getElementById('noResultsState');
+        const noResultsDetail = document.getElementById('noResultsDetail');
+        const resultsContent = document.getElementById('resultsContent');
+
+        const summaryCompanyName = document.getElementById('summaryCompanyName');
+        const summaryCNPJ = document.getElementById('summaryCNPJ');
+        const summaryQuoteCount = document.getElementById('summaryQuoteCount');
+        const btnCopyCNPJ = document.getElementById('btnCopyCNPJ');
+        const btnExportCSV = document.getElementById('btnExportCSV');
+        
+        const filterTabs = document.getElementById('filterTabs');
+        const sortSelect = document.getElementById('sortSelect');
+        const quoteCardsGrid = document.getElementById('quoteCardsGrid');
+        const toastNotification = document.getElementById('toastNotification');
+        const toastText = document.getElementById('toastText');
+
+        function cleanDigits(str) {
+            if (!str) return '';
+            return String(str).replace(/\D/g, '');
+        }
+
+        function formatCNPJ(cnpjStr) {
+            const digits = cleanDigits(cnpjStr);
+            if (digits.length === 14) {
+                return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+            }
+            if (digits.length === 8) {
+                return digits.replace(/^(\d{2})(\d{3})(\d{3})$/, "$1.$2.$3 (Raiz)");
+            }
+            return cnpjStr || '-';
+        }
+
+        function formatDate(val) {
+            if (!val || val === '-') return '-';
+            const strVal = String(val).trim();
+            if (strVal.match(/^\d{4}-\d{2}-\d{2}/)) {
+                const parts = strVal.substring(0, 10).split('-');
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return strVal;
+        }
+
+        function formatCurrency(val) {
+            if (val === null || val === undefined || val === '' || val === '-' || val === '-%') return '-';
+            let num = NaN;
+            if (typeof val === 'number') {
+                num = val;
+            } else {
+                let cleanStr = String(val).replace('R$', '').replace(/\s/g, '').trim();
+                if (cleanStr.includes(',') && cleanStr.includes('.')) {
+                    cleanStr = cleanStr.replace(/\./g, '').replace(',', '.');
+                } else if (cleanStr.includes(',')) {
+                    cleanStr = cleanStr.replace(',', '.');
+                }
+                num = parseFloat(cleanStr);
+            }
+            if (isNaN(num)) return val;
+            return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function formatPercent(val) {
+            if (val === null || val === undefined || val === '' || val === '-' || val === '-%') return '-';
+            if (typeof val === 'string' && val.includes('%')) return val;
+            let num = NaN;
+            if (typeof val === 'number') {
+                num = val;
+            } else {
+                num = parseFloat(String(val).replace(',', '.'));
+            }
+            if (isNaN(num)) return val;
+            if (Math.abs(num) <= 1 && num !== 0) {
+                return (num * 100).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + '%';
+            }
+            return num.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + '%';
+        }
+
+        function getStatusInfo(statusStr) {
+            if (!statusStr || statusStr === '-') {
+                return { class: 'status-neutral', label: 'NÃO INFORMADO' };
+            }
+            const clean = String(statusStr).trim().toUpperCase();
+            if (clean.includes('APROVAD') || clean.includes('RESPONDID') || clean.includes('ACEITO') || clean.includes('CONCLUÍD')) {
+                return { class: 'status-approved', label: statusStr };
+            }
+            if (clean.includes('REPROVAD') || clean.includes('DEVOLVID') || clean.includes('CANCELAD') || clean.includes('DECLINAD')) {
+                return { class: 'status-rejected', label: statusStr };
+            }
+            if (clean.includes('QUESTION') || clean.includes('MÉDIC') || clean.includes('MEDIC') || clean.includes('JURÍD') || clean.includes('RISCO') || clean.includes('FINAC') || clean.includes('CONSULTAR')) {
+                return { class: 'status-pending', label: statusStr };
+            }
+            return { class: 'status-neutral', label: statusStr };
+        }
+
+        function showToast(message) {
+            toastText.textContent = message;
+            toastNotification.classList.add('show');
+            setTimeout(() => {
+                toastNotification.classList.remove('show');
+            }, 3000);
+        }
+
+        async function loadDatabase() {
+            try {
+                // Puxa o JSON (funciona 100% no GitHub Pages)
+                const response = await fetch('./dados.json');
+                if (!response.ok) throw new Error(`HTTP error status: ${response.status}`);
+                allDatabaseData = await response.json();
+                
+                allDatabaseData.forEach(item => {
+                    item._cleanCNPJ = cleanDigits(item['CNPJ'] || '');
+                });
+
+                dbStatusBadge.style.borderColor = 'rgba(34, 197, 94, 0.4)';
+                dbStatusText.textContent = `Base Ativa (${allDatabaseData.length.toLocaleString('pt-BR')} cotações)`;
+
+                loadingState.style.display = 'none';
+                welcomeState.style.display = 'block';
+            } catch (err) {
+                console.error("Erro ao carregar dados.json:", err);
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                dbStatusBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                dbStatusText.textContent = 'Erro ao carregar base';
+            }
+        }
+
+        function performSearch(query) {
+            const rawQuery = (query || searchInput.value || '').trim();
+            if (!rawQuery) return;
+
+            currentSearchedCNPJ = rawQuery;
+            btnClear.style.display = 'inline-flex';
+            const queryDigits = cleanDigits(rawQuery);
+            let matches = [];
+
+            if (queryDigits.length > 0) {
+                matches = allDatabaseData.filter(item => {
+                    if (!item._cleanCNPJ) return false;
+                    return item._cleanCNPJ.includes(queryDigits);
+                });
+            }
+
+            if (matches.length === 0 && rawQuery.length >= 3) {
+                const queryLower = rawQuery.toLowerCase();
+                matches = allDatabaseData.filter(item => {
+                    const empName = (item['NOME DA EMPRESA'] || '').toLowerCase();
+                    const numCot = (item['NÚMERO DA COTAÇÃO'] || '').toLowerCase();
+                    return empName.includes(queryLower) || numCot.includes(queryLower);
+                });
+            }
+
+            currentResults = matches;
+            currentFilterStatus = 'ALL';
+
+            welcomeState.style.display = 'none';
+            noResultsState.style.display = 'none';
+
+            if (matches.length === 0) {
+                resultsContent.style.display = 'none';
+                noResultsDetail.textContent = `Nenhuma cotação foi encontrada para "${rawQuery}". Certifique-se de que o CNPJ está correto.`;
+                noResultsState.style.display = 'block';
+            } else {
+                noResultsState.style.display = 'none';
+                resultsContent.style.display = 'block';
+                renderSummaryBanner();
+                renderFilterTabs();
+                renderCards();
+            }
+        }
+
+        function renderSummaryBanner() {
+            const first = currentResults[0] || {};
+            const empName = first['NOME DA EMPRESA'] || 'EMPRESA NÃO IDENTIFICADA';
+            const displayCNPJ = formatCNPJ(first['CNPJ'] || currentSearchedCNPJ);
+
+            summaryCompanyName.textContent = empName;
+            summaryCNPJ.textContent = displayCNPJ;
+            summaryQuoteCount.textContent = `${currentResults.length} cotação(ões) encontrada(s)`;
+        }
+
+        function renderFilterTabs() {
+            filterTabs.innerHTML = '';
+            const counts = { ALL: currentResults.length };
+            currentResults.forEach(item => {
+                const st = (item['SITUAÇÃO'] || 'NÃO INFORMADO').trim();
+                counts[st] = (counts[st] || 0) + 1;
+            });
+
+            const btnAll = document.createElement('button');
+            btnAll.className = `tab-btn ${currentFilterStatus === 'ALL' ? 'active' : ''}`;
+            btnAll.textContent = `Todas (${counts.ALL})`;
+            btnAll.onclick = () => {
+                currentFilterStatus = 'ALL';
+                renderFilterTabs();
+                renderCards();
+            };
+            filterTabs.appendChild(btnAll);
+
+            Object.keys(counts).forEach(statusKey => {
+                if (statusKey === 'ALL') return;
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${currentFilterStatus === statusKey ? 'active' : ''}`;
+                btn.textContent = `${statusKey} (${counts[statusKey]})`;
+                btn.onclick = () => {
+                    currentFilterStatus = statusKey;
+                    renderFilterTabs();
+                    renderCards();
+                };
+                filterTabs.appendChild(btn);
+            });
+        }
+
+        function renderCards() {
+            quoteCardsGrid.innerHTML = '';
+            let filtered = currentResults;
+            if (currentFilterStatus !== 'ALL') {
+                filtered = currentResults.filter(item => (item['SITUAÇÃO'] || 'NÃO INFORMADO').trim() === currentFilterStatus);
+            }
+
+            const sortVal = sortSelect.value;
+            filtered.sort((a, b) => {
+                if (sortVal === 'date-desc' || sortVal === 'date-asc') {
+                    const dA = a['DATA DA ANÁLISE'] || '';
+                    const dB = b['DATA DA ANÁLISE'] || '';
+                    return sortVal === 'date-desc' ? dB.localeCompare(dA) : dA.localeCompare(dB);
+                }
+                if (sortVal === 'fat-desc' || sortVal === 'fat-asc') {
+                    const fA = parseFloat(a['ESTIMATIVA DE FATURA']) || 0;
+                    const fB = parseFloat(b['ESTIMATIVA DE FATURA']) || 0;
+                    return sortVal === 'fat-desc' ? fB - fA : fA - fB;
+                }
+                return 0;
+            });
+
+            if (filtered.length === 0) {
+                quoteCardsGrid.innerHTML = `<div style="text-align: center; padding: 24px; color: var(--text-muted);">Nenhuma cotação com a situação "${currentFilterStatus}".</div>`;
+                return;
+            }
+
+            filtered.forEach((quote, index) => {
+                const card = createQuoteCard(quote, index + 1);
+                quoteCardsGrid.appendChild(card);
+            });
+        }
+
+        function createQuoteCard(item, displayIndex) {
+            const card = document.createElement('div');
+            card.className = 'quote-card';
+
+            const statusObj = getStatusInfo(item['SITUAÇÃO']);
+            const quoteNum = item['NÚMERO DA COTAÇÃO'] || item['NUMERO DA COTACAO'] || `Cotação #${displayIndex}`;
+            const dateFormatted = formatDate(item['DATA DA ANÁLISE']);
+
+            const sec1HTML = buildFieldsHTML([
+                { label: 'CNPJ', value: formatCNPJ(item['CNPJ']) },
+                { label: 'Nome da Empresa', value: item['NOME DA EMPRESA'] },
+                { label: 'Vidas', value: item['VIDAS'] ? `${item['VIDAS']} vidas` : '-' },
+                { label: 'Tipo de Contratação', value: item['TIPO DE CONTRATAÇÃO'] },
+                { label: 'Origem', value: item['ORIGEM'] },
+                { label: 'Apresentou Vida?', value: item['APRESENTOU VIDA?'] },
+                { label: 'Ramo', value: item['RAMO'] }
+            ]);
+
+            const sec2HTML = buildFieldsHTML([
+                { label: 'Número da Cotação', value: quoteNum },
+                { label: 'Data da Análise', value: dateFormatted },
+                { label: 'Analista Responsável', value: item['ANALISTA'] },
+                { label: 'Cenário / Tipo Análise', value: item['CENÁRIO'] || item['TIPO DE ANALISE'] },
+                { label: 'Congênere', value: item['CONGÊNERE'] },
+                { label: 'Produto', value: item['PRODUTO'] },
+                { label: 'Rede', value: item['REDE'] },
+                { label: 'Prioridade', value: item['PRIORIDADE'] },
+                { label: 'Chance Fechamento', value: formatPercent(item['CHANCE FECHAMENTO']) }
+            ]);
+
+            const sec3HTML = buildFieldsHTML([
+                { label: 'Estimativa de Fatura', value: formatCurrency(item['ESTIMATIVA DE FATURA']), isCurrency: true },
+                { label: 'Faturamento Macro', value: formatCurrency(item['FATURAMENTO MACRO']), isCurrency: true },
+                { label: 'Faturamento Necessário', value: formatCurrency(item['FATURAMENTO NECESSÁRIO']), isCurrency: true },
+                { label: 'Agenciamento', value: formatPercent(item['AGENCIAMENTO']) },
+                { label: 'Comissão', value: formatPercent(item['COMISSÃO']) },
+                { label: 'Agravo / Desconto', value: formatPercent(item['AGRAVO/DESCONTO']) },
+                { label: 'Reajuste Anual', value: formatPercent(item['REAJUSTE ANUAL']) },
+                { label: 'Coparticipação', value: formatPercent(item['COPARTICIPAÇÃO']) },
+                { label: 'DA', value: formatPercent(item['DA']) },
+                { label: 'ML', value: formatPercent(item['ML']) },
+                { label: 'Diluição', value: item['DILUIÇÃO'] },
+                { label: 'Relatório Sinistralidade', value: item['RELATÓRIO DE SINISTRALIDADE'] },
+                { label: 'Sinistralidade Congênere', value: formatPercent(item['SINISTRALIDADE CONGÊNERE']) }
+            ]);
+
+            const sec4HTML = buildFieldsHTML([
+                { label: 'Corretor', value: item['CORRETOR'] },
+                { label: 'Escritório Regional', value: item['ESCRITÓRIO REGIONAL'] }
+            ]);
+
+            const obsText = item['OBSERVAÇÕES'] || item['OBSERVACOES'];
+            const obsHTML = (obsText && obsText !== '-') ? `
+                <div class="obs-box">
+                    <div class="obs-title">Observações do Processo:</div>
+                    <div>${escapeHTML(obsText)}</div>
+                </div>
+            ` : '';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <span class="quote-number-title">${escapeHTML(quoteNum)}</span>
+                        <span class="quote-date-sub">
+                            ${dateFormatted}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="status-badge ${statusObj.class}">${escapeHTML(statusObj.label)}</span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="section-block">
+                        <div class="section-title">Identificação da Empresa & Contrato</div>
+                        <div class="fields-grid">${sec1HTML}</div>
+                    </div>
+                    <div class="section-block">
+                        <div class="section-title">Dados da Cotação & Análise</div>
+                        <div class="fields-grid">${sec2HTML}</div>
+                    </div>
+                    <div class="section-block">
+                        <div class="section-title">Condições Comerciais & Financeiras</div>
+                        <div class="fields-grid">${sec3HTML}</div>
+                    </div>
+                    <div class="section-block">
+                        <div class="section-title">Intermediadores & Região</div>
+                        <div class="fields-grid">${sec4HTML}</div>
+                    </div>
+                    ${obsHTML}
+                </div>
+            `;
+            return card;
+        }
+
+        function buildFieldsHTML(fields) {
+            return fields.map(f => {
+                const raw = f.value;
+                const isEmpty = (raw === null || raw === undefined || raw === '' || raw === '-');
+                const displayVal = isEmpty ? '-' : raw;
+                const cssClass = isEmpty ? 'field-value empty-val' : (f.isCurrency ? 'field-value highlight-currency' : 'field-value');
+                return `
+                    <div class="field-item">
+                        <div class="field-label">${escapeHTML(f.label)}</div>
+                        <div class="${cssClass}">${escapeHTML(String(displayVal))}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        btnCopyCNPJ.onclick = () => {
+            if (!currentResults || currentResults.length === 0) return;
+            const cnpjVal = currentResults[0]['CNPJ'] || currentSearchedCNPJ;
+            navigator.clipboard.writeText(cnpjVal).then(() => {
+                showToast(`CNPJ ${cnpjVal} copiado!`);
+            }).catch(() => {
+                showToast(`CNPJ: ${cnpjVal}`);
+            });
+        };
+
+        btnExportCSV.onclick = () => {
+            if (!currentResults || currentResults.length === 0) return;
+            const allKeys = [];
+            currentResults.forEach(item => {
+                Object.keys(item).forEach(k => {
+                    if (!k.startsWith('_') && !allKeys.includes(k)) allKeys.push(k);
+                });
+            });
+
+            let csvContent = "\uFEFF";
+            csvContent += allKeys.map(k => `"${k.replace(/"/g, '""')}"`).join(',') + "\n";
+            currentResults.forEach(item => {
+                const row = allKeys.map(k => {
+                    let val = item[k];
+                    if (val === null || val === undefined) val = '';
+                    val = String(val).replace(/"/g, '""');
+                    return `"${val}"`;
+                });
+                csvContent += row.join(',') + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const cleanCnpjStr = cleanDigits(currentResults[0]['CNPJ'] || currentSearchedCNPJ || 'cotacoes');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `cotacoes_${cleanCnpjStr}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Arquivo CSV baixado!');
+        };
+
+        btnSearch.onclick = () => performSearch();
+        searchInput.onkeypress = (e) => {
+            if (e.key === 'Enter') performSearch();
+        };
+
+        btnClear.onclick = () => {
+            searchInput.value = '';
+            currentSearchedCNPJ = '';
+            currentResults = [];
+            btnClear.style.display = 'none';
+            resultsContent.style.display = 'none';
+            noResultsState.style.display = 'none';
+            welcomeState.style.display = 'block';
+        };
+
+        sortSelect.onchange = () => renderCards();
+        window.addEventListener('DOMContentLoaded', loadDatabase);
+    </script>
+</body>
+</html>
