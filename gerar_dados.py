@@ -2,8 +2,7 @@ import os
 import json
 import pandas as pd
 
-def converter_excel_para_json():
-    # Procurar arquivo excel na pasta atual
+def converter_excel_para_js():
     arquivos = [f for f in os.listdir('.') if f.endswith('.xlsx') or f.endswith('.xls')]
     if not arquivos:
         print("Erro: Nenhum arquivo .xlsx ou .xls encontrado na pasta!")
@@ -31,7 +30,6 @@ def converter_excel_para_json():
     print(f"Utilizando a aba: '{target_sheet}'")
     df = pd.read_excel(excel_file, sheet_name=target_sheet)
 
-    # Remover colunas vazias
     df = df.dropna(how='all', axis=1)
     df = df.loc[:, ~df.columns.astype(str).str.startswith('Unnamed')]
 
@@ -57,12 +55,15 @@ def converter_excel_para_json():
         if 'CNPJ' in item and item['CNPJ']:
             registros.append(item)
 
-    out_file = 'dados.json'
+    # AQUI ESTÁ A MUDANÇA: Salvando como dados.js
+    out_file = 'dados.js'
     with open(out_file, 'w', encoding='utf-8') as f:
+        f.write("const baseDadosLocal = ")
         json.dump(registros, f, ensure_ascii=False, indent=2)
+        f.write(";")
 
     tamanho_mb = os.path.getsize(out_file) / (1024 * 1024)
     print(f"Sucesso! {len(registros)} cotações exportadas para '{out_file}' ({tamanho_mb:.2f} MB).")
 
 if __name__ == '__main__':
-    converter_excel_para_json()
+    converter_excel_para_js()
